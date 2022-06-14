@@ -5,10 +5,10 @@
 - springboot
 - mybatis
 - arcsoft-sdk-face
+- lombok
 
 ## ---
 
-- lombok
 - vue.js
 - tracking.js
 
