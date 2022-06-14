@@ -1,23 +1,19 @@
 package com.lsh.controller;
 
 import com.arcsoft.face.FaceFeature;
-import com.arcsoft.face.FaceInfo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lsh.common.R;
-import com.lsh.config.FaceEngineUtil;
 import com.lsh.entity.User;
 import com.lsh.service.UserService;
+import com.lsh.utils.FaceEngineUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +71,7 @@ public class UserController {
 			user.setUfaceId(featureDataString);
 			user.setCreateTime(new Date());
 			userService.save(user);
-			return R.success();
+			return R.success().setMsg("人脸注册成功");
 		}
 		log.warn("无人脸特征!");
 		return R.error("人脸注册失败: 无人脸特征 请重试!");

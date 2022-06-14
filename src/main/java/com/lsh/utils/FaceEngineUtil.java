@@ -1,16 +1,15 @@
-package com.lsh.config;
+package com.lsh.utils;
 
-import com.arcsoft.face.*;
-import com.arcsoft.face.enums.DetectMode;
-import com.arcsoft.face.enums.DetectOrient;
-import com.arcsoft.face.enums.ErrorInfo;
+import com.arcsoft.face.FaceEngine;
+import com.arcsoft.face.FaceFeature;
+import com.arcsoft.face.FaceInfo;
+import com.arcsoft.face.FaceSimilar;
 import com.arcsoft.face.toolkit.ImageInfo;
+import com.lsh.config.ArcsoftConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
