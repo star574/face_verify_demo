@@ -9,11 +9,10 @@ import com.arcsoft.face.enums.DetectOrient;
 import com.arcsoft.face.enums.ErrorInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import sun.security.jca.GetInstance;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @ClassName: ArcsoftConfig
@@ -42,8 +41,22 @@ public class ArcsoftConfig {
 
 	private FaceEngine getInstance() {
 		// 项目路径
-		String dir = System.getProperty("user.dir");
-		FaceEngine faceEngine = new FaceEngine(dir + "\\libs\\WIN64");
+		File file = new File("");
+//		String dir = System.getProperty("user.dir");
+		String dir = null;
+		try {
+			dir = file.getCanonicalPath();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		String osName = System.getProperty("os.name");
+		FaceEngine faceEngine;
+		if (osName.startsWith("Windows")) {
+			faceEngine = new FaceEngine(dir + "\\libs\\WIN64");
+		} else {
+			faceEngine = new FaceEngine(dir + "/libs/LINUX64");
+		}
 		//激活引擎
 		int errorCode = faceEngine.activeOnline(appid, sdkKey);
 		log.info("appid:{}", appid);
@@ -87,6 +100,19 @@ public class ArcsoftConfig {
 		}
 		log.warn("激活引擎成功");
 		return faceEngine;
+	}
+
+	public static void main(String[] args) {
+		// 项目路径
+		File file = new File("");
+//		String dir = System.getProperty("user.dir");
+		String dir = null;
+		try {
+			dir = file.getCanonicalPath();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		System.out.println(dir);
 	}
 
 }
