@@ -1,0 +1,209 @@
+<template>
+  <div class="container">
+    <div class="face-container">
+      <div class="video-box">
+        <video
+          id="video"
+          height="720"
+          width="480"
+          preload
+          autoplay
+          loop
+          muted
+        ></video>
+        <canvas id="canvas" width="480" height="720"></canvas>
+      </div>
+      <canvas id="screenshotCanvas" width="480" height="720"></canvas>
+    </div>
+    <div class="user-container userinfo">
+      <el-form label-position="left">
+        姓名：
+        <el-form-item>
+          <el-input v-model="user.uname" placeholder="输入姓名注册人脸信息"></el-input>
+        </el-form-item>
+        <el-form-item class="btn">
+          <el-button type="primary" @click="register">注册</el-button>
+          开启人脸识别：
+          <el-switch
+            v-model="verifyFlag"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+require('../assets/tracking.js');
+require('../assets/data/face-min.js');
+import userApi from '@/api/user'
+export default {
+  data() {
+    return {
+      video: null,
+      screenshotCanvas: null,
+      user: {
+        uid: null,
+        uname: null,
+        ufaceId: null,
+        uimage: null
+      },
+      verifyFlag: false,
+      lastTime: null
+    }
+  },
+  created() {
+    this.lastTime = Date.now()
+  },
+  mounted() {
+    this.init();
+  },
+  methods: {
+    // 初始化设置
+    init() {
+      this.video = document.getElementById('video');
+      this.screenshotCanvas = document.getElementById('screenshotCanvas');
+
+      let canvas = document.getElementById('canvas');
+      let context = canvas.getContext('2d');
+
+      // 固定写法
+      let tracker = new window.tracking.ObjectTracker("face");
+      tracker.setInitialScale(4);
+      tracker.setStepSize(2);
+      tracker.setEdgesDensity(0.1);
+      window.tracking.track('#video', tracker, {
+        camera: true
+      });
+
+      let _this = this;
+      tracker.on('track', function (event) {
+        // 检测出人脸 绘画人脸位置
+        context.clearRect(0, 0, canvas.width + 5, canvas.height + 5);
+        event.data.forEach(function (rect) {
+          context.strokeStyle = '#fe0000';
+          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+          // 人脸检测
+          // 两秒防重复
+          if (_this.verifyFlag) {
+            if (Date.now() - _this.lastTime > 2000) {
+              _this.verify()
+              _this.lastTime = Date.now()
+            }
+          }
+        });
+      });
+    },
+    // 上传图片
+    screenshotAndUpload() {
+      // 上锁避免重复发送请求
+      // 绘制当前帧图片转换为base64格式
+      let canvas = this.screenshotCanvas;
+      let video = this.video;
+      let ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      let base64Img = canvas.toDataURL('image/jpeg');
+      // 使用 base64Img 请求接口即可
+      console.log('发送请求:')
+      this.user.uimage = base64Img
+      // 请求接口成功以后打开锁
+    },
+    register() {
+      this.screenshotAndUpload();
+      userApi.register(this.user).then((result) => {
+        console.log(result.data);
+        console.log(result.data.msg);
+        if (result.data.code == 200) {
+          this.$message({
+            message: result.data.msg,
+            type: 'success'
+          });
+        } else {
+          this.$message.error(result.data.msg);
+        }
+      })
+    },
+    verify() {
+      this.screenshotAndUpload();
+      userApi.verify(this.user).then(res => {
+        if (res.data.code == 200) {
+          this.$message({
+            message: res.data.msg,
+            type: 'success'
+          });
+          console.log("用户信息：");
+          console.log(res.data.data);
+        }
+      })
+    }
+  }
+}
+</script>
+
+</script>
+
+<style  scoped>
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: aliceblue;
+  background-color: rgb(48, 56, 45);
+}
+
+/* 绘图canvas 不需显示隐藏即可 */
+#screenshotCanvas {
+  display: none;
+}
+
+.face-container {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-box {
+  margin: 0 auto;
+  position: relative;
+  width: 480px;
+  height: 720px;
+  box-shadow: 0 0 20px seashell;
+}
+
+video,
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.user-container {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  flex-direction: column;
+  font-size: 18px;
+}
+.btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.el-button {
+  margin: 20px 40px;
+}
+.el-switch {
+  margin: 20px 40px 20px 4px;
+  font-size: 18px;
+}
+</style>
