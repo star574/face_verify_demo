@@ -49,12 +49,18 @@ public class UserController {
 			log.warn("用户名为空!");
 			return R.error("人脸注册失败: 用户名为空 请重试!");
 		}
-
+		// 比对用户名
 		long count = userService.count(new QueryWrapper<User>().eq("uname", uname.trim()));
 		if (count > 0) {
 			log.warn("用户已存在!");
 			return R.error("人脸注册失败: 用户已存在!");
 		}
+		// 比对人脸
+		User exist = exist(user);
+		if (exist != null) {
+			return R.error("人脸注册失败: 人脸已存在!");
+		}
+
 		byte[] image = user.getUimage().replace("data:image/jpeg;base64,", "").getBytes(StandardCharsets.UTF_8);
 		// 提取特征
 		FaceFeature faceFeature = faceEngineUtil.extractFaceFeature(image);
@@ -77,8 +83,19 @@ public class UserController {
 		return R.error("人脸注册失败: 无人脸特征 请重试!");
 	}
 
+	/*
+	 * 人脸比对
+	 * */
 	@PostMapping("/verify")
 	public R<User> verify(@RequestBody User user) {
+		User exist = exist(user);
+		if (exist != null) {
+			return R.success(exist).setMsg("人脸验证成功! 用户名: " + exist.getUname());
+		}
+		return R.error("人脸验证失败!");
+	}
+
+	private User exist(User user) {
 		byte[] image = user.getUimage().replace("data:image/jpeg;base64,", "").getBytes(StandardCharsets.UTF_8);
 		// 提取特征
 		FaceFeature faceFeature = faceEngineUtil.extractFaceFeature(image);
@@ -100,10 +117,10 @@ public class UserController {
 
 				if (aFloat > 0.80) {
 					user1.setUfaceId(null);
-					return R.success(user1).setMsg("人脸验证成功!");
+					return user1;
 				}
 			}
 		}
-		return R.error("人脸验证失败!");
+		return null;
 	}
 }

@@ -2,7 +2,7 @@ package com.lsh.common;
 
 /**
  * @ClassName: R
- * @Description:
+ * @Description: 返回结果类
  * @Date: 2022/6/14 11:49
  * @Author: shihengluo574@gmail.com
  * @Version: 1.0

@@ -19,7 +19,10 @@
       <el-form label-position="left">
         姓名：
         <el-form-item>
-          <el-input v-model="user.uname" placeholder="输入姓名注册人脸信息"></el-input>
+          <el-input
+            v-model="user.uname"
+            placeholder="输入姓名注册人脸信息"
+          ></el-input>
         </el-form-item>
         <el-form-item class="btn">
           <el-button type="primary" @click="register">注册</el-button>
@@ -43,15 +46,20 @@ import userApi from '@/api/user'
 export default {
   data() {
     return {
+      // 视频 element
       video: null,
+      // canvas element
       screenshotCanvas: null,
+      // 用户信息
       user: {
         uid: null,
         uname: null,
         ufaceId: null,
         uimage: null
       },
+      // 是否开启人脸验证
       verifyFlag: false,
+      // 最后验证事件 用来控制重复请求
       lastTime: null
     }
   },
@@ -81,12 +89,14 @@ export default {
 
       let _this = this;
       tracker.on('track', function (event) {
+        setTimeout(() => { }, 200)
         // 检测出人脸 绘画人脸位置
-        context.clearRect(0, 0, canvas.width + 5, canvas.height + 5);
+        context.clearRect(0, 0, canvas.width, canvas.height);
         event.data.forEach(function (rect) {
-          context.strokeStyle = '#fe0000';
+          context.strokeStyle = '#ffc600';
+          context.lineWidth=5
           context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-          // 人脸检测
+          // 人脸比对
           // 两秒防重复
           if (_this.verifyFlag) {
             if (Date.now() - _this.lastTime > 2000) {
@@ -97,7 +107,7 @@ export default {
         });
       });
     },
-    // 上传图片
+    // 获取base64图片数据
     screenshotAndUpload() {
       // 上锁避免重复发送请求
       // 绘制当前帧图片转换为base64格式
@@ -108,10 +118,11 @@ export default {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       let base64Img = canvas.toDataURL('image/jpeg');
       // 使用 base64Img 请求接口即可
-      console.log('发送请求:')
+      console.log('发送请求')
       this.user.uimage = base64Img
       // 请求接口成功以后打开锁
     },
+    // 人脸注册
     register() {
       this.screenshotAndUpload();
       userApi.register(this.user).then((result) => {
@@ -127,6 +138,7 @@ export default {
         }
       })
     },
+    // 人脸比对
     verify() {
       this.screenshotAndUpload();
       userApi.verify(this.user).then(res => {
@@ -135,8 +147,7 @@ export default {
             message: res.data.msg,
             type: 'success'
           });
-          console.log("用户信息：");
-          console.log(res.data.data);
+          console.log("用户信息：", res.data.data);
         }
       })
     }

@@ -16,7 +16,7 @@ import java.io.IOException;
 
 /**
  * @ClassName: ArcsoftConfig
- * @Description:
+ * @Description: 虹软 引擎配置及初始化
  * @Date: 2022/6/14 17:16
  * @Author: shihengluo574@gmail.com
  * @Version: 1.0
@@ -100,19 +100,6 @@ public class ArcsoftConfig {
 		}
 		log.warn("激活引擎成功");
 		return faceEngine;
-	}
-
-	public static void main(String[] args) {
-		// 项目路径
-		File file = new File("");
-//		String dir = System.getProperty("user.dir");
-		String dir = null;
-		try {
-			dir = file.getCanonicalPath();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		System.out.println(dir);
 	}
 
 }

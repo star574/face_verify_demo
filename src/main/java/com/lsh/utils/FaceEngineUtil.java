@@ -35,7 +35,9 @@ public class FaceEngineUtil {
 		this.faceEngine = arcsoftConfig.getFaceEngine();
 	}
 
-	// 人脸检测
+	/*
+	 * 人脸检测
+	 * */
 	public List<FaceInfo> detectFaces(byte[] image) {
 		ImageInfo imageInfo = getRGBData(Base64.getDecoder().decode(image));
 		if (imageInfo != null) {
@@ -47,6 +49,9 @@ public class FaceEngineUtil {
 		return null;
 	}
 
+	/*
+	 * 提取人脸特征
+	 * */
 	public FaceFeature extractFaceFeature(byte[] image) {
 		ImageInfo imageInfo = getRGBData(Base64.getDecoder().decode(image));
 		if (imageInfo != null) {
@@ -68,6 +73,9 @@ public class FaceEngineUtil {
 		return null;
 	}
 
+	/*
+	 * 人脸特征比对
+	 * */
 	public Float compareFaceFeature(FaceFeature sourceFaceFeature, FaceFeature targetFaceFeature) {
 		FaceSimilar faceSimilar = new FaceSimilar();
 		int errorCode = faceEngine.compareFaceFeature(targetFaceFeature, sourceFaceFeature, faceSimilar);

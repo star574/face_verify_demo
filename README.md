@@ -1,4 +1,14 @@
-# 工程简介
+# 基于虹软 实时人脸识别demo
 
-# 延伸阅读
+## ---
+
+- springboot
+- mybatis
+- arcsoft-sdk-face
+
+## ---
+
+- lombok
+- vue.js
+- tracking.js
 
