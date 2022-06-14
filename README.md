@@ -3,7 +3,7 @@
 ## ---
 
 - springboot
-- mybatis
+- mybatis-plus
 - arcsoft-sdk-face
 - lombok
 
