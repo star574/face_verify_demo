@@ -19,7 +19,7 @@ import static com.arcsoft.face.toolkit.ImageFactory.getRGBData;
 
 /**
  * @ClassName: FaceEngineConfig
- * @Description:
+ * @Description: 引擎封装
  * @Date: 2022/6/14 12:08
  * @Author: shihengluo574@gmail.com
  * @Version: 1.0
@@ -28,6 +28,10 @@ import static com.arcsoft.face.toolkit.ImageFactory.getRGBData;
 @Component
 public class FaceEngineUtil {
 
+	/**
+	 * @Description: 虹软引擎
+	 * @Date: 2022/6/15 15:53
+	 **/
 	private FaceEngine faceEngine;
 
 	@Autowired
@@ -35,13 +39,17 @@ public class FaceEngineUtil {
 		this.faceEngine = arcsoftConfig.getFaceEngine();
 	}
 
-	/*
-	 * 人脸检测
-	 * */
+	/**
+	 * @param image
+	 * @Description: 人脸检测
+	 * TODO:
+	 * @Date: 2022/6/15 15:53
+	 * @return: java.util.List<com.arcsoft.face.FaceInfo>
+	 **/
 	public List<FaceInfo> detectFaces(byte[] image) {
 		ImageInfo imageInfo = getRGBData(Base64.getDecoder().decode(image));
 		if (imageInfo != null) {
-			List<FaceInfo> faceInfoList = new ArrayList<FaceInfo>();
+			List<FaceInfo> faceInfoList = new ArrayList<>();
 			int errorCode = faceEngine.detectFaces(imageInfo.getImageData(), imageInfo.getWidth(), imageInfo.getHeight(), imageInfo.getImageFormat(), faceInfoList);
 			return faceInfoList;
 		}
@@ -49,13 +57,17 @@ public class FaceEngineUtil {
 		return null;
 	}
 
-	/*
-	 * 提取人脸特征
-	 * */
+	/**
+	 * @param image
+	 * @Description: 提取人脸特征
+	 * TODO:
+	 * @Date: 2022/6/15 15:54
+	 * @return: com.arcsoft.face.FaceFeature
+	 **/
 	public FaceFeature extractFaceFeature(byte[] image) {
 		ImageInfo imageInfo = getRGBData(Base64.getDecoder().decode(image));
 		if (imageInfo != null) {
-			List<FaceInfo> faceInfoList = new ArrayList<FaceInfo>();
+			List<FaceInfo> faceInfoList = new ArrayList<>();
 			FaceFeature faceFeature = new FaceFeature();
 			// 检测
 			int errorCode = faceEngine.detectFaces(imageInfo.getImageData(), imageInfo.getWidth(), imageInfo.getHeight(), imageInfo.getImageFormat(), faceInfoList);
@@ -73,9 +85,14 @@ public class FaceEngineUtil {
 		return null;
 	}
 
-	/*
-	 * 人脸特征比对
-	 * */
+	/**
+	 * @param sourceFaceFeature
+	 * @param targetFaceFeature
+	 * @Description: 人脸比对
+	 * TODO:
+	 * @Date: 2022/6/15 15:54
+	 * @return: java.lang.Float
+	 **/
 	public Float compareFaceFeature(FaceFeature sourceFaceFeature, FaceFeature targetFaceFeature) {
 		FaceSimilar faceSimilar = new FaceSimilar();
 		int errorCode = faceEngine.compareFaceFeature(targetFaceFeature, sourceFaceFeature, faceSimilar);

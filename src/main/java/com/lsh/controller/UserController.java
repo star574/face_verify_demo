@@ -7,6 +7,7 @@ import com.lsh.entity.User;
 import com.lsh.service.UserService;
 import com.lsh.utils.FaceEngineUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,9 +40,9 @@ public class UserController {
 	@Autowired
 	FaceEngineUtil faceEngineUtil;
 
-	/*
+	/**
 	 * 人脸注册
-	 * */
+	 */
 	@PostMapping("/register")
 	public R<?> register(@RequestBody User user) {
 		String uname = user.getUname();
@@ -55,71 +56,62 @@ public class UserController {
 			log.warn("用户已存在!");
 			return R.error("人脸注册失败: 用户已存在!");
 		}
-		// 比对人脸
-		User exist = exist(user);
-		if (exist != null) {
-			return R.error("人脸注册失败: 人脸已存在!");
-		}
 
-		byte[] image = user.getUimage().replace("data:image/jpeg;base64,", "").getBytes(StandardCharsets.UTF_8);
-		// 提取特征
-		FaceFeature faceFeature = faceEngineUtil.extractFaceFeature(image);
-		if (faceFeature != null) {
-			byte[] featureData = faceFeature.getFeatureData();
-			StringBuilder sb = new StringBuilder();
-			for (byte featureDatum : featureData) {
-				sb.append(String.valueOf(featureDatum)).append(",");
-			}
-			sb.deleteCharAt(sb.length() - 1);
-			// 保存byte数组拼接后得字符串
-			String featureDataString = sb.toString();
-			// 保存到数据库
-			user.setUfaceId(featureDataString);
-			user.setCreateTime(new Date());
-			userService.save(user);
-			return R.success().setMsg("人脸注册成功");
+		// 比对人脸
+		User userinfo = exist(user);
+		if (userinfo == null) {
+			return R.error("人脸注册失败: 无人脸特征 请重试!");
+		} else if (userinfo.getUid() != null) {
+			return R.error("人脸注册失败: 已存在该人脸数据 姓名: " + userinfo.getUname());
 		}
-		log.warn("无人脸特征!");
-		return R.error("人脸注册失败: 无人脸特征 请重试!");
+		// 无uid 新人脸数据 保存到数据库
+		userinfo.setCreateTime(new Date());
+		userService.save(userinfo);
+		return R.success().setMsg("人脸注册成功");
 	}
 
-	/*
+	/**
 	 * 人脸比对
-	 * */
+	 */
 	@PostMapping("/verify")
 	public R<User> verify(@RequestBody User user) {
-		User exist = exist(user);
-		if (exist != null) {
-			return R.success(exist).setMsg("人脸验证成功! 用户名: " + exist.getUname());
+		User userinfo = exist(user);
+		if (userinfo != null && userinfo.getUid() != null) {
+			// 清除人脸数据后再返回
+			userinfo.setUfaceId(null);
+			return R.success(userinfo).setMsg("人脸验证成功! 用户名: " + userinfo.getUname());
 		}
 		return R.error("人脸验证失败!");
 	}
 
+	/**
+	 * 数据库是否存在数据
+	 * 返回 带有uid的数据 数据库已存在
+	 * 返回 null 没有人脸特征
+	 * 返回 无uid 但粗壮乃人脸数据 新用户
+	 */
 	private User exist(User user) {
 		byte[] image = user.getUimage().replace("data:image/jpeg;base64,", "").getBytes(StandardCharsets.UTF_8);
 		// 提取特征
 		FaceFeature faceFeature = faceEngineUtil.extractFaceFeature(image);
+		// 用户临时存放数据库人脸特征
+		FaceFeature faceFeature1 = new FaceFeature();
 		if (faceFeature != null) {
-			// 取出所有人脸数据
+			// 取出所有人脸数据比对
 			List<User> list = userService.list();
-			for (User user1 : list) {
-				String ufaceId = user1.getUfaceId();
-				String[] split = ufaceId.split(",");
-				byte[] bytes = new byte[split.length];
-				// 还原byte数组
-				for (int i = 0; i < split.length; i++) {
-					bytes[i] = Byte.parseByte(split[i]);
-				}
+			for (User u : list) {
+				byte[] ufaceId = u.getUfaceId();
 				// 构造目标人脸数据
-				FaceFeature faceFeature1 = new FaceFeature();
-				faceFeature1.setFeatureData(bytes);
+				faceFeature1.setFeatureData(ufaceId);
 				Float aFloat = faceEngineUtil.compareFaceFeature(faceFeature1, faceFeature);
-
 				if (aFloat > 0.80) {
-					user1.setUfaceId(null);
-					return user1;
+					u.setUfaceId(null);
+					return u;
 				}
 			}
+			// 存储人脸数据到user
+			user.setUfaceId(faceFeature.getFeatureData());
+			return user;
 		}
 		return null;
 	}

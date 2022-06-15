@@ -109,7 +109,6 @@ export default {
     },
     // 获取base64图片数据
     screenshotAndUpload() {
-      // 上锁避免重复发送请求
       // 绘制当前帧图片转换为base64格式
       let canvas = this.screenshotCanvas;
       let video = this.video;
@@ -120,7 +119,6 @@ export default {
       // 使用 base64Img 请求接口即可
       console.log('发送请求')
       this.user.uimage = base64Img
-      // 请求接口成功以后打开锁
     },
     // 人脸注册
     register() {
@@ -128,7 +126,7 @@ export default {
       userApi.register(this.user).then((result) => {
         console.log(result.data);
         console.log(result.data.msg);
-        if (result.data.code == 200) {
+        if (result.data.code === 200) {
           this.$message({
             message: result.data.msg,
             type: 'success'
@@ -142,7 +140,7 @@ export default {
     verify() {
       this.screenshotAndUpload();
       userApi.verify(this.user).then(res => {
-        if (res.data.code == 200) {
+        if (res.data.code === 200) {
           this.$message({
             message: res.data.msg,
             type: 'success'
@@ -153,8 +151,6 @@ export default {
     }
   }
 }
-</script>
-
 </script>
 
 <style  scoped>
