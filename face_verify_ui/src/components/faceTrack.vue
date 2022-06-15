@@ -2,15 +2,7 @@
   <div class="container">
     <div class="face-container">
       <div class="video-box">
-        <video
-          id="video"
-          height="720"
-          width="480"
-          preload
-          autoplay
-          loop
-          muted
-        ></video>
+        <video id="video" height="720" preload autoplay loop muted></video>
         <canvas id="canvas" width="480" height="720"></canvas>
       </div>
       <canvas id="screenshotCanvas" width="480" height="720"></canvas>
@@ -18,7 +10,7 @@
     <div class="user-container userinfo">
       <el-form label-position="left">
         姓名：
-        <el-form-item>
+        <el-form-item class="uname">
           <el-input
             v-model="user.uname"
             placeholder="输入姓名注册人脸信息"
@@ -26,7 +18,8 @@
         </el-form-item>
         <el-form-item class="btn">
           <el-button type="primary" @click="register">注册</el-button>
-          开启人脸识别：
+          <span v-if="verifyFlag">人脸识别已开启  </span>
+          <span v-if="!verifyFlag">人脸识别已关闭  </span>
           <el-switch
             v-model="verifyFlag"
             active-color="#13ce66"
@@ -74,7 +67,6 @@ export default {
     init() {
       this.video = document.getElementById('video');
       this.screenshotCanvas = document.getElementById('screenshotCanvas');
-
       let canvas = document.getElementById('canvas');
       let context = canvas.getContext('2d');
 
@@ -94,7 +86,7 @@ export default {
         context.clearRect(0, 0, canvas.width, canvas.height);
         event.data.forEach(function (rect) {
           context.strokeStyle = '#ffc600';
-          context.lineWidth=5
+          context.lineWidth = 5
           context.strokeRect(rect.x, rect.y, rect.width, rect.height);
           // 人脸比对
           // 两秒防重复
@@ -155,6 +147,7 @@ export default {
 
 <style  scoped>
 .container {
+  min-width: 1200px;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -175,14 +168,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  
 }
 
 .video-box {
   margin: 0 auto;
   position: relative;
-  width: 480px;
   height: 720px;
-  box-shadow: 0 0 20px seashell;
 }
 
 video,
@@ -190,6 +182,9 @@ canvas {
   position: absolute;
   top: 0;
   left: 0;
+}
+video{
+  box-shadow: 0px 0px 8px seashell;
 }
 .user-container {
   display: flex;
@@ -210,7 +205,10 @@ canvas {
   margin: 20px 40px;
 }
 .el-switch {
-  margin: 20px 40px 20px 4px;
+  margin: 20px 40px 20px 10px;
   font-size: 18px;
+}
+.uname{
+  margin: 20px 0;
 }
 </style>
