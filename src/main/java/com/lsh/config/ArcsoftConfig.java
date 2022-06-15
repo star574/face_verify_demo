@@ -39,7 +39,13 @@ public class ArcsoftConfig {
 		return faceEngine;
 	}
 
+	/**
+	 * 初始化引擎
+	 *
+	 * @date 2022/6/15 20:39
+	 */
 	private FaceEngine getInstance() {
+
 		// 项目路径
 		File file = new File("");
 //		String dir = System.getProperty("user.dir");
