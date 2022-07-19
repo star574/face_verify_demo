@@ -29,7 +29,6 @@ build/
 
 ### VS Code ###
 .vscode/
-
 # Logs
 logs
 *.log
@@ -134,3 +133,4 @@ dist
 
 # TernJS port file
 .tern-port
+/src/main/resources/application.yaml
