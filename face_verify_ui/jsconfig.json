@@ -9,6 +9,7 @@
         "src/*"
       ]
     },
+    "jsx": "preserve", //添加配置
     "lib": [
       "esnext",
       "dom",

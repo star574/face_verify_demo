@@ -11,20 +11,13 @@
       <el-form label-position="left">
         姓名：
         <el-form-item class="uname">
-          <el-input
-            v-model="user.uname"
-            placeholder="输入姓名注册人脸信息"
-          ></el-input>
+          <el-input v-model="user.uname" placeholder="输入姓名注册人脸信息"></el-input>
         </el-form-item>
         <el-form-item class="btn">
           <el-button type="primary" @click="register">注册</el-button>
-          <span v-if="verifyFlag">人脸识别已开启  </span>
-          <span v-if="!verifyFlag">人脸识别已关闭  </span>
-          <el-switch
-            v-model="verifyFlag"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          >
+          <span v-if="verifyFlag">人脸识别已开启 </span>
+          <span v-if="!verifyFlag">人脸识别已关闭 </span>
+          <el-switch v-model="verifyFlag" active-color="#13ce66" inactive-color="#ff4949">
           </el-switch>
         </el-form-item>
       </el-form>
@@ -168,7 +161,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
 }
 
 .video-box {
@@ -183,9 +176,11 @@ canvas {
   top: 0;
   left: 0;
 }
-video{
+
+video {
   box-shadow: 0px 0px 8px seashell;
 }
+
 .user-container {
   display: flex;
   width: 50%;
@@ -195,20 +190,24 @@ video{
   flex-direction: column;
   font-size: 18px;
 }
+
 .btn {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .el-button {
   margin: 20px 40px;
 }
+
 .el-switch {
   margin: 20px 40px 20px 10px;
   font-size: 18px;
 }
-.uname{
+
+.uname {
   margin: 20px 0;
 }
 </style>
