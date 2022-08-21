@@ -7,7 +7,6 @@ import com.lsh.entity.User;
 import com.lsh.service.UserService;
 import com.lsh.utils.FaceEngineUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
